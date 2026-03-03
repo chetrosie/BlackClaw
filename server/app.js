@@ -52,7 +52,7 @@ function handleCheckoutCompleted(eventObj) {
 app.get("/api/health", (_req, res) => {
   ok(res, {
     service: "blackclaw-api",
-    version: "v1.0.4",
+    version: "v1.0.5",
     now: new Date().toISOString(),
   });
 });

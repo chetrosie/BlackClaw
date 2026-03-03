@@ -1,18 +1,6 @@
-name: Deploy Pages Static
+name: Deploy Pages Static (Manual)
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - index.html
-      - dashboard.html
-      - public/**
-      - scripts/prepare-static.sh
-      - scripts/cf-pages-deploy.sh
-      - .github/workflows/deploy-pages.yml
-      - VERSION
-      - README.md
   workflow_dispatch:
 
 jobs:

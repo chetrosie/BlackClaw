@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.5 - 2026-03-03
+
+- Updated deployment strategy to match current setup:
+  - Cloudflare Pages uses native GitHub integration for auto-deploy
+  - `.github/workflows/deploy-pages.yml` changed to manual trigger only (`workflow_dispatch`)
+- Added About section navigation links and project intro block already kept in landing page.
+- Synced version markers to `v1.0.5` in `VERSION`, `index.html`, `dashboard.html`, `server/app.js`, `README.md`, and `package.json`.
+- Local git identity remains:
+  - `CodeX <codex@users.noreply.github.com>`
+
 ## v1.0.4 - 2026-03-03
 
 - Added new `About` section on landing page with project introduction:

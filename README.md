@@ -1,9 +1,9 @@
 # BlackClaw MVP (OpenClaw 托管服务)
 
 ## 版本
-- 当前版本：`v1.0.4`
+- 当前版本：`v1.0.5`
 - 版本策略：`MAJOR.MINOR.PATCH`
-- 迭代规则：每次功能/页面修改默认递增 `PATCH`（如 `v1.0.5`）
+- 迭代规则：每次功能/页面修改默认递增 `PATCH`（如 `v1.0.6`）
 
 ## 当前能力
 这是一个可跑通的 MVP 链路：
@@ -80,29 +80,21 @@ npm run dev
 3. 观察 `Jobs` 从 `queued/running` 到 `done`
 4. 观察 `Instances` 从 `provisioning` 到 `running`
 
-## Cloudflare Pages（手动部署）
+## Pages 部署模式（当前）
 
-```bash
-cd /Users/chuen/Projects/blackclaw-clone
-npm run cf:login
-PROJECT_NAME=blackclaw npm run cf:project:create   # 首次
-PROJECT_NAME=blackclaw npm run cf:deploy
-```
+你当前已改为：**Cloudflare Pages 直接关联 GitHub 仓库自动部署**（推荐）。
 
-## GitHub Actions（已配置）
+- `push main` 后由 Cloudflare 原生 Git Integration 触发部署。
+- 仓库里的 `deploy-pages.yml` 已改为 **仅手动触发**（应急备用）。
 
-### 1) 自动部署静态页
+## GitHub Actions（当前保留）
+
+### 1) deploy-pages（手动）
 文件：`.github/workflows/deploy-pages.yml`
-触发：`push main`（静态相关文件改动）或手动 `workflow_dispatch`
+触发：`workflow_dispatch`（手动）
+用途：当 Cloudflare Git Integration 异常时，手工触发备用部署。
 
-需要在 GitHub 仓库里配置：
-- `Secrets`:
-  - `CLOUDFLARE_API_TOKEN`
-  - `CLOUDFLARE_ACCOUNT_ID`
-- `Variables`（可选）:
-  - `CF_PAGES_PROJECT`（默认 `blackclaw`）
-
-### 2) 后端 CI + Docker 构建检查
+### 2) backend-ci（自动）
 文件：`.github/workflows/backend-ci.yml`
 触发：后端相关文件 `push/pull_request`
 
@@ -110,13 +102,12 @@ PROJECT_NAME=blackclaw npm run cf:deploy
 - Node 依赖安装与语法检查
 - `docker build` 构建检查（`Dockerfile`）
 
-## 推到 GitHub
+## Cloudflare Pages（手动备用命令）
 
 ```bash
 cd /Users/chuen/Projects/blackclaw-clone
-git add .
-git commit -m "ci: add github actions for pages deploy and backend docker build"
-git push
+npm run cf:login
+PROJECT_NAME=blackclaw npm run cf:deploy
 ```
 
 ## 生产化下一步
