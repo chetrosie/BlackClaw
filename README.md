@@ -1,14 +1,14 @@
 # BlackClaw MVP (OpenClaw 托管服务)
 
 ## 版本
-- 当前版本：`v1.0.3`
+- 当前版本：`v1.0.4`
 - 版本策略：`MAJOR.MINOR.PATCH`
-- 迭代规则：每次功能/页面修改默认递增 `PATCH`（如 `v1.0.4`）
+- 迭代规则：每次功能/页面修改默认递增 `PATCH`（如 `v1.0.5`）
 
 ## 当前能力
 这是一个可跑通的 MVP 链路：
 
-1. 营销页（`index.html`）
+1. 营销页（`index.html`，含 About 项目简介模块）
 2. 控制台（`dashboard.html`）
 3. API（`server/*`）
 4. 模拟支付回调（替代 Stripe UI）

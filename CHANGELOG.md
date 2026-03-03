@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.4 - 2026-03-03
+
+- Added new `About` section on landing page with project introduction:
+  - project goal
+  - current MVP scope
+  - next implementation plan
+- Added `About` anchor links in top navigation and footer.
+- Synced version markers to `v1.0.4` in `VERSION`, `index.html`, `dashboard.html`, `server/app.js`, `README.md`, and `package.json`.
+- Updated local git commit identity to:
+  - `user.name = CodeX`
+  - `user.email = codex@users.noreply.github.com`
+
 ## v1.0.3 - 2026-03-03
 
 - Added GitHub Actions workflows:
