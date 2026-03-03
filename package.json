@@ -1,0 +1,18 @@
+{
+  "name": "blackclaw-clone",
+  "private": true,
+  "version": "1.0.2",
+  "description": "BlackClaw MVP: marketing site + control-plane API + provisioning simulation",
+  "scripts": {
+    "dev": "node server/index.js",
+    "start": "node server/index.js",
+    "cf:login": "npx wrangler@4 login",
+    "cf:project:create": "bash ./scripts/cf-pages-create.sh",
+    "cf:deploy": "bash ./scripts/cf-pages-deploy.sh",
+    "cf:deploy:preview": "bash ./scripts/cf-pages-deploy.sh preview"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "zod": "^3.24.2"
+  }
+}

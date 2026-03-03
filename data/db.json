@@ -1,0 +1,93 @@
+{
+  "users": [
+    {
+      "id": "06300ef5-cf33-4b1c-be7b-dabc087d0954",
+      "email": "founder@blackclaw.ai",
+      "name": "BlackClaw Founder",
+      "createdAt": "2026-03-03T05:44:16.538Z"
+    }
+  ],
+  "subscriptions": [
+    {
+      "id": "a2998143-20d8-4e0b-8378-6a8824d8242a",
+      "userId": "06300ef5-cf33-4b1c-be7b-dabc087d0954",
+      "plan": "pro",
+      "billingCycle": "monthly",
+      "status": "active",
+      "providerRef": "sub_mock_qx9kjkku",
+      "createdAt": "2026-03-03T05:46:10.322Z",
+      "updatedAt": "2026-03-03T05:46:10.322Z"
+    }
+  ],
+  "instances": [
+    {
+      "id": "c710d37e-6965-44da-b79d-78fb0e27ec80",
+      "userId": "06300ef5-cf33-4b1c-be7b-dabc087d0954",
+      "plan": "pro",
+      "region": "us-east",
+      "status": "running",
+      "endpoint": "https://c710d37e.blackclaw.internal",
+      "providerRef": "mock-c710d37e-696",
+      "createdAt": "2026-03-03T05:46:10.323Z",
+      "updatedAt": "2026-03-03T05:46:14.997Z"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "90694f6a-beaf-4db1-8969-3411e21d98a7",
+      "type": "provision_instance",
+      "status": "done",
+      "payload": {
+        "instanceId": "c710d37e-6965-44da-b79d-78fb0e27ec80",
+        "userId": "06300ef5-cf33-4b1c-be7b-dabc087d0954"
+      },
+      "attempts": 1,
+      "lastError": null,
+      "createdAt": "2026-03-03T05:46:10.323Z",
+      "updatedAt": "2026-03-03T05:46:14.998Z"
+    }
+  ],
+  "events": [
+    {
+      "id": "03ed4346-072c-41be-a5f4-57e1434cec1c",
+      "type": "instance.provisioned",
+      "message": "Instance c710d37e-6965-44da-b79d-78fb0e27ec80 is running",
+      "payload": {
+        "instanceId": "c710d37e-6965-44da-b79d-78fb0e27ec80",
+        "endpoint": "https://c710d37e.blackclaw.internal"
+      },
+      "createdAt": "2026-03-03T05:46:14.998Z"
+    },
+    {
+      "id": "97c4dfe5-e9ea-42fd-aeda-82e9c7230c5f",
+      "type": "billing.checkout.completed",
+      "message": "Subscription active for founder@blackclaw.ai, provisioning started",
+      "payload": {
+        "subscriptionId": "a2998143-20d8-4e0b-8378-6a8824d8242a",
+        "instanceId": "c710d37e-6965-44da-b79d-78fb0e27ec80",
+        "jobId": "90694f6a-beaf-4db1-8969-3411e21d98a7"
+      },
+      "createdAt": "2026-03-03T05:46:10.323Z"
+    },
+    {
+      "id": "13f65cd0-dffd-4e33-8abf-c51413d8af31",
+      "type": "user.login",
+      "message": "User login: founder@blackclaw.ai",
+      "payload": {
+        "userId": "06300ef5-cf33-4b1c-be7b-dabc087d0954",
+        "email": "founder@blackclaw.ai"
+      },
+      "createdAt": "2026-03-03T05:46:10.304Z"
+    },
+    {
+      "id": "c9128a36-422e-4873-9a18-de45402f28b2",
+      "type": "user.login",
+      "message": "User login: founder@blackclaw.ai",
+      "payload": {
+        "userId": "06300ef5-cf33-4b1c-be7b-dabc087d0954",
+        "email": "founder@blackclaw.ai"
+      },
+      "createdAt": "2026-03-03T05:44:16.539Z"
+    }
+  ]
+}

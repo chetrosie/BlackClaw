@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlackClaw Control Plane Dashboard</title>
+  <style>
+    :root {
+      --bg: #070909;
+      --panel: #101514;
+      --line: rgba(255,255,255,0.14);
+      --text: #f2faf6;
+      --muted: #98aaa1;
+      --accent: #3dd68c;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.5;
+      padding: 24px;
+    }
+    .wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      border: 1px solid var(--line);
+      background: #0b100f;
+      padding: 14px 16px;
+    }
+    .head strong {
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+    .mono { font-family: var(--mono); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+    .title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+    .row {
+      display: grid;
+      gap: 8px;
+    }
+    label {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    input, select, button {
+      border-radius: 0;
+      border: 1px solid var(--line);
+      background: #0c1211;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    button {
+      cursor: pointer;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #062214;
+      font-weight: 600;
+    }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-subtle:hover { border-color: #d8efe2; }
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    pre {
+      margin: 0;
+      border: 1px solid var(--line);
+      background: #0b1110;
+      padding: 12px;
+      overflow: auto;
+      font-size: 12px;
+      font-family: var(--mono);
+      max-height: 320px;
+      color: #d7e8df;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .ok { color: #7effb6; }
+    .err { color: #ff8b8b; }
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <strong>BlackClaw Control Plane Dashboard</strong>
+        <div class="hint">MVP chain: login -> simulate billing -> provisioning job -> running instance</div>
+      </div>
+      <div class="mono">version v1.0.2</div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <div class="title">1) Mock Login</div>
+        <div class="row">
+          <label for="email">Email</label>
+          <input id="email" type="email" value="founder@blackclaw.ai" />
+        </div>
+        <div class="row">
+          <label for="name">Name</label>
+          <input id="name" type="text" value="BlackClaw Founder" />
+        </div>
+        <div class="actions">
+          <button class="btn-primary" id="login-btn">Login / Create User</button>
+          <button class="btn-subtle" id="refresh-btn">Refresh Data</button>
+        </div>
+        <div class="hint">Current user id: <span class="mono" id="current-user">(none)</span></div>
+      </section>
+
+      <section class="card">
+        <div class="title">2) Simulate Purchase</div>
+        <div class="row">
+          <label for="plan">Plan</label>
+          <select id="plan">
+            <option value="lite">Lite</option>
+            <option value="pro" selected>Pro</option>
+            <option value="max">Max</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="cycle">Billing Cycle</label>
+          <select id="cycle">
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="region">Region</label>
+          <select id="region">
+            <option value="us-east" selected>US East</option>
+            <option value="eu-west">EU West</option>
+            <option value="ap-southeast">AP Southeast</option>
+          </select>
+        </div>
+        <div class="actions">
+          <button class="btn-primary" id="purchase-btn">Trigger checkout.session.completed</button>
+        </div>
+        <div class="hint">This bypasses Stripe UI and directly simulates webhook handling.</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="title">Instances</div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Plan</th>
+            <th>Status</th>
+            <th>Region</th>
+            <th>Endpoint</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="instances-body"></tbody>
+      </table>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <div class="title">Jobs</div>
+        <pre id="jobs-json">[]</pre>
+      </section>
+      <section class="card">
+        <div class="title">Events</div>
+        <pre id="events-json">[]</pre>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="title">Last API Result</div>
+      <pre id="result-json">{}</pre>
+      <div class="hint" id="status-line"></div>
+    </section>
+  </div>
+
+  <script>
+    const state = { userId: null };
+
+    const resultBox = document.getElementById("result-json");
+    const statusLine = document.getElementById("status-line");
+
+    function showResult(payload, ok) {
+      resultBox.textContent = JSON.stringify(payload, null, 2);
+      statusLine.textContent = ok ? "OK" : "Error";
+      statusLine.className = ok ? "hint ok" : "hint err";
+    }
+
+    async function api(path, options = {}) {
+      const res = await fetch(path, {
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+        ...options,
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        throw new Error((json && json.error) || `HTTP ${res.status}`);
+      }
+      return json.data;
+    }
+
+    function renderInstances(instances) {
+      const tbody = document.getElementById("instances-body");
+      tbody.innerHTML = "";
+
+      if (!instances.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="hint">No instances yet</td></tr>';
+        return;
+      }
+
+      instances.forEach((inst) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="mono">${inst.id.slice(0, 8)}</td>
+          <td class="mono">${inst.plan}</td>
+          <td class="mono">${inst.status}</td>
+          <td class="mono">${inst.region}</td>
+          <td class="mono">${inst.endpoint || "-"}</td>
+          <td>
+            <div class="actions">
+              <button class="btn-subtle" data-id="${inst.id}" data-action="start">start</button>
+              <button class="btn-subtle" data-id="${inst.id}" data-action="restart">restart</button>
+              <button class="btn-subtle" data-id="${inst.id}" data-action="stop">stop</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll("button[data-action]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          try {
+            const data = await api(`/api/instances/${btn.dataset.id}/actions`, {
+              method: "POST",
+              body: JSON.stringify({ action: btn.dataset.action }),
+            });
+            showResult(data, true);
+            await refreshAll();
+          } catch (err) {
+            showResult({ error: err.message }, false);
+          }
+        });
+      });
+    }
+
+    async function refreshAll() {
+      const userId = state.userId;
+
+      const [instances, jobs, events] = await Promise.all([
+        api(`/api/instances${userId ? `?userId=${userId}` : ""}`),
+        api("/api/jobs"),
+        api("/api/events"),
+      ]);
+
+      renderInstances(instances);
+      document.getElementById("jobs-json").textContent = JSON.stringify(jobs, null, 2);
+      document.getElementById("events-json").textContent = JSON.stringify(events, null, 2);
+    }
+
+    document.getElementById("login-btn").addEventListener("click", async () => {
+      try {
+        const email = document.getElementById("email").value.trim();
+        const name = document.getElementById("name").value.trim();
+        const user = await api("/api/users/mock-login", {
+          method: "POST",
+          body: JSON.stringify({ email, name }),
+        });
+        state.userId = user.id;
+        document.getElementById("current-user").textContent = user.id;
+        showResult(user, true);
+        await refreshAll();
+      } catch (err) {
+        showResult({ error: err.message }, false);
+      }
+    });
+
+    document.getElementById("purchase-btn").addEventListener("click", async () => {
+      try {
+        if (!state.userId) {
+          throw new Error("请先登录创建用户");
+        }
+        const payload = {
+          userId: state.userId,
+          plan: document.getElementById("plan").value,
+          billingCycle: document.getElementById("cycle").value,
+          region: document.getElementById("region").value,
+        };
+        const result = await api("/api/dev/simulate-purchase", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        showResult(result, true);
+        await refreshAll();
+      } catch (err) {
+        showResult({ error: err.message }, false);
+      }
+    });
+
+    document.getElementById("refresh-btn").addEventListener("click", async () => {
+      try {
+        await refreshAll();
+        showResult({ refreshed: true }, true);
+      } catch (err) {
+        showResult({ error: err.message }, false);
+      }
+    });
+
+    refreshAll().catch((err) => {
+      showResult({ error: err.message }, false);
+    });
+  </script>
+</body>
+</html>

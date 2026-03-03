@@ -1,0 +1,1656 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>BlackClaw — OpenClaw 全托管云服务</title>
+        <meta name="app-version" content="v1.0.2" />
+        <meta
+            name="description"
+            content="BlackClaw 提供 OpenClaw / Clawdbot 全托管云服务：零运维部署、专属实例、7x24 在线、安全隔离。"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Sora:wght@400;500;600;700&amp;display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --bg: #070909;
+                --bg-soft: #0d1110;
+                --fg: #f3faf6;
+                --dim: #98aaa1;
+                --dimmer: #65756d;
+                --line: rgba(255, 255, 255, 0.14);
+                --line-soft: rgba(255, 255, 255, 0.08);
+                --accent: #3dd68c;
+                --accent-strong: #2ec379;
+                --ease: cubic-bezier(0.4, 0, 0.2, 1);
+                --max: 1360px;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                background: var(--bg);
+                color: var(--fg);
+                font-family:
+                    "Sora", "PingFang SC", "Microsoft YaHei", sans-serif;
+                font-size: 17px;
+                line-height: 1.7;
+                -webkit-font-smoothing: antialiased;
+                text-rendering: optimizeLegibility;
+                background-image:
+                    linear-gradient(
+                        rgba(255, 255, 255, 0.015) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        90deg,
+                        rgba(255, 255, 255, 0.015) 1px,
+                        transparent 1px
+                    ),
+                    radial-gradient(
+                        circle at 80% -5%,
+                        rgba(61, 214, 140, 0.2),
+                        transparent 28%
+                    ),
+                    radial-gradient(
+                        circle at 20% 0%,
+                        rgba(61, 214, 140, 0.1),
+                        transparent 22%
+                    );
+                background-size:
+                    30px 30px,
+                    30px 30px,
+                    auto,
+                    auto;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+
+            .mono {
+                font-family:
+                    "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+            }
+
+            .shell {
+                width: min(var(--max), calc(100vw - 64px));
+                margin: 0 auto;
+            }
+
+            .topbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 120;
+                height: 58px;
+                border-bottom: 1px solid var(--line);
+                backdrop-filter: blur(16px);
+                background: rgba(7, 9, 9, 0.84);
+            }
+
+            .topbar-inner {
+                height: 100%;
+                width: min(var(--max), calc(100vw - 64px));
+                margin: 0 auto;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 24px;
+            }
+
+            .brand {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 14px;
+                letter-spacing: -0.01em;
+                white-space: nowrap;
+            }
+
+            .brand-dot {
+                width: 10px;
+                height: 10px;
+                background: var(--accent);
+                display: inline-block;
+                box-shadow: 0 0 14px rgba(61, 214, 140, 0.55);
+            }
+
+            .nav-group {
+                display: flex;
+                align-items: center;
+                gap: 26px;
+                margin-left: 22px;
+            }
+
+            .nav-group a {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 12px;
+                color: var(--dim);
+                transition: color 0.16s var(--ease);
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                white-space: nowrap;
+            }
+
+            .nav-group a:hover {
+                color: var(--fg);
+            }
+
+            .top-actions {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .btn,
+            .btn-ghost,
+            .btn-micro {
+                border: 1px solid var(--line);
+                border-radius: 0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 12px;
+                letter-spacing: 0.02em;
+                transition: all 0.16s var(--ease);
+                cursor: pointer;
+                white-space: nowrap;
+            }
+
+            .btn {
+                background: var(--accent);
+                color: #03170f;
+                border-color: var(--accent);
+                font-weight: 500;
+                padding: 8px 14px;
+            }
+
+            .btn:hover {
+                background: var(--accent-strong);
+                border-color: var(--accent-strong);
+            }
+
+            .btn-ghost {
+                padding: 8px 14px;
+                color: var(--fg);
+                background: rgba(255, 255, 255, 0.02);
+            }
+
+            .btn-ghost:hover {
+                border-color: var(--fg);
+            }
+
+            .btn-micro {
+                padding: 4px 10px;
+                font-size: 11px;
+                color: var(--dim);
+                background: transparent;
+            }
+
+            .btn-micro:hover {
+                border-color: var(--fg);
+                color: var(--fg);
+            }
+
+            .menu-btn {
+                display: none;
+                width: 34px;
+                height: 34px;
+                border: 1px solid var(--line);
+                background: transparent;
+                color: var(--fg);
+                font-size: 16px;
+                border-radius: 0;
+                cursor: pointer;
+            }
+
+            .notice {
+                position: sticky;
+                top: 58px;
+                z-index: 100;
+                height: 34px;
+                overflow: hidden;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.24);
+                background: var(--accent);
+                color: #072116;
+                display: flex;
+                align-items: center;
+            }
+
+            .notice-track {
+                display: flex;
+                align-items: center;
+                white-space: nowrap;
+                animation: ticker 18s linear infinite;
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 11px;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                font-weight: 500;
+            }
+
+            .notice-item {
+                padding: 0 26px;
+            }
+
+            .notice-sep {
+                opacity: 0.45;
+                flex-shrink: 0;
+            }
+
+            @keyframes ticker {
+                from {
+                    transform: translateX(0);
+                }
+                to {
+                    transform: translateX(-50%);
+                }
+            }
+
+            .hero {
+                padding: 156px 0 84px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 64px;
+                align-items: start;
+            }
+
+            .hero-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                border: 1px solid var(--line);
+                padding: 6px 12px;
+                margin-bottom: 34px;
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 12px;
+                color: var(--dim);
+            }
+
+            .hero-tag i {
+                width: 7px;
+                height: 7px;
+                background: var(--accent);
+                display: inline-block;
+            }
+
+            .hero h1 {
+                font-size: clamp(2.5rem, 5vw, 4.3rem);
+                line-height: 1.05;
+                letter-spacing: -0.03em;
+                font-weight: 600;
+                margin-bottom: 28px;
+                max-width: 700px;
+            }
+
+            .hero h1 strong {
+                color: var(--accent);
+                font-weight: 600;
+            }
+
+            .hero-sub {
+                color: var(--dim);
+                max-width: 590px;
+                margin-bottom: 36px;
+            }
+
+            .hero-cta {
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                margin-bottom: 34px;
+            }
+
+            .kpis {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 12px;
+                max-width: 700px;
+            }
+
+            .kpi {
+                border: 1px solid var(--line);
+                background: rgba(255, 255, 255, 0.015);
+                padding: 14px;
+                min-height: 98px;
+            }
+
+            .kpi strong {
+                display: block;
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 24px;
+                color: var(--fg);
+                margin-bottom: 6px;
+            }
+
+            .kpi span {
+                color: var(--dim);
+                font-size: 13px;
+                line-height: 1.45;
+            }
+
+            .terminal {
+                border: 1px solid var(--line);
+                background: #0a0d0d;
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 13px;
+                line-height: 1.7;
+                overflow: hidden;
+            }
+
+            .terminal-head {
+                height: 40px;
+                border-bottom: 1px solid var(--line);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 14px;
+            }
+
+            .terminal-dots {
+                display: inline-flex;
+                gap: 6px;
+            }
+
+            .terminal-dots i {
+                width: 8px;
+                height: 8px;
+                background: rgba(255, 255, 255, 0.15);
+                display: inline-block;
+            }
+
+            .terminal-head span {
+                font-size: 11px;
+                color: var(--dimmer);
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .terminal-body {
+                padding: 20px 16px;
+                color: var(--dim);
+                min-height: 246px;
+            }
+
+            .prompt {
+                color: var(--accent);
+            }
+
+            .cmd {
+                color: var(--fg);
+            }
+
+            .blink {
+                display: inline-block;
+                width: 8px;
+                height: 14px;
+                background: var(--accent);
+                vertical-align: text-bottom;
+                animation: blink 1s step-end infinite;
+            }
+
+            @keyframes blink {
+                50% {
+                    opacity: 0;
+                }
+            }
+
+            .terminal-out {
+                margin-top: 10px;
+                display: none;
+            }
+
+            .terminal-line {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 2px;
+            }
+
+            .terminal-line b {
+                color: var(--dimmer);
+                font-weight: 400;
+                min-width: 80px;
+                display: inline-block;
+            }
+
+            .terminal-line em {
+                color: var(--fg);
+                font-style: normal;
+            }
+
+            .section {
+                padding: 160px 0;
+            }
+
+            .section-title {
+                font-size: clamp(2rem, 4vw, 3.5rem);
+                letter-spacing: -0.03em;
+                line-height: 1.1;
+                font-weight: 600;
+                margin-bottom: 18px;
+            }
+
+            .section-sub {
+                color: var(--dim);
+                max-width: 640px;
+            }
+
+            .section-label {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 11px;
+                letter-spacing: 0.1em;
+                color: var(--dimmer);
+                text-transform: uppercase;
+                margin-bottom: 20px;
+            }
+
+            .setup {
+                display: grid;
+                grid-template-columns: 40fr 60fr;
+                gap: 84px;
+                align-items: start;
+            }
+
+            .setup-left {
+                position: sticky;
+                top: 128px;
+            }
+
+            .steps {
+                display: grid;
+                gap: 14px;
+                margin-top: 28px;
+            }
+
+            .step-card {
+                border: 1px solid var(--line);
+                background: rgba(255, 255, 255, 0.015);
+            }
+
+            .step-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 14px;
+                border-bottom: 1px solid var(--line-soft);
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 11px;
+                letter-spacing: 0.05em;
+                color: var(--dimmer);
+                text-transform: uppercase;
+            }
+
+            .step-body {
+                padding: 14px;
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 13px;
+                line-height: 1.8;
+                color: var(--dim);
+            }
+
+            .step-body .highlight {
+                color: var(--fg);
+            }
+
+            .copy-row {
+                border-top: 1px solid var(--line-soft);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 10px 14px;
+                background: rgba(255, 255, 255, 0.01);
+            }
+
+            .copy-row small {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 11px;
+                color: var(--dimmer);
+            }
+
+            .services {
+                border-top: 1px solid var(--line);
+                margin-top: 18px;
+            }
+
+            .service-item {
+                display: grid;
+                grid-template-columns: 90px 280px 1fr;
+                gap: 36px;
+                align-items: baseline;
+                padding: 28px 0;
+                border-bottom: 1px solid var(--line-soft);
+            }
+
+            .service-no {
+                font-size: 34px;
+                letter-spacing: -0.02em;
+                color: rgba(255, 255, 255, 0.2);
+                font-family: "IBM Plex Mono", monospace;
+            }
+
+            .service-name {
+                font-size: 22px;
+                letter-spacing: -0.02em;
+                line-height: 1.2;
+            }
+
+            .service-desc {
+                color: var(--dim);
+                font-size: 15px;
+                max-width: 670px;
+            }
+
+            .why-list {
+                border-top: 1px solid var(--line);
+                margin-top: 30px;
+            }
+
+            .why-item {
+                display: grid;
+                grid-template-columns: 90px 1fr;
+                gap: 24px;
+                padding: 30px 0;
+                border-bottom: 1px solid var(--line-soft);
+            }
+
+            .why-no {
+                font-family: "IBM Plex Mono", monospace;
+                color: rgba(255, 255, 255, 0.22);
+                font-size: 30px;
+            }
+
+            .why-item h3 {
+                font-size: 24px;
+                font-weight: 500;
+                margin-bottom: 10px;
+                letter-spacing: -0.02em;
+            }
+
+            .why-item p {
+                color: var(--dim);
+                max-width: 800px;
+                font-size: 15px;
+            }
+
+            .testi-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 14px;
+                margin-top: 28px;
+            }
+
+            .quote {
+                border: 1px solid var(--line);
+                padding: 18px;
+                background: rgba(255, 255, 255, 0.014);
+                min-height: 170px;
+            }
+
+            .quote p {
+                color: #d3e0d8;
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+
+            .quote small {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 11px;
+                color: var(--dimmer);
+                letter-spacing: 0.03em;
+                text-transform: uppercase;
+            }
+
+            .pricing {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 80px;
+                align-items: start;
+            }
+
+            .pricing-main {
+                padding-top: 8px;
+            }
+
+            .price-big {
+                font-size: clamp(4rem, 11vw, 8rem);
+                letter-spacing: -0.05em;
+                line-height: 0.95;
+                font-weight: 600;
+            }
+
+            .price-big span {
+                font-size: clamp(1.6rem, 3vw, 2.2rem);
+                color: var(--dim);
+                letter-spacing: -0.02em;
+                margin-left: 6px;
+            }
+
+            .price-note {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 12px;
+                color: var(--dimmer);
+                margin-top: 8px;
+            }
+
+            .billing-switch {
+                margin-top: 20px;
+                display: inline-flex;
+                border: 1px solid var(--line);
+            }
+
+            .billing-switch button {
+                border: none;
+                border-right: 1px solid var(--line);
+                background: transparent;
+                color: var(--dim);
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 12px;
+                padding: 9px 14px;
+                cursor: pointer;
+                border-radius: 0;
+            }
+
+            .billing-switch button:last-child {
+                border-right: none;
+            }
+
+            .billing-switch button.active {
+                background: var(--accent);
+                color: #072116;
+                font-weight: 500;
+            }
+
+            .plan-grid {
+                display: grid;
+                gap: 12px;
+            }
+
+            .plan {
+                border: 1px solid var(--line);
+                background: rgba(255, 255, 255, 0.015);
+                padding: 16px;
+            }
+
+            .plan-head {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 10px;
+            }
+
+            .plan-name {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 13px;
+                color: #ccdad3;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .plan-price {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 25px;
+                color: var(--fg);
+                letter-spacing: -0.02em;
+            }
+
+            .plan-price small {
+                font-size: 12px;
+                color: var(--dim);
+            }
+
+            .plan-desc {
+                color: var(--dim);
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+
+            .plan ul {
+                list-style: none;
+                display: grid;
+                gap: 6px;
+                margin-bottom: 14px;
+                font-size: 13px;
+                color: #d4e0d9;
+            }
+
+            .plan ul li::before {
+                content: "+ ";
+                color: var(--accent);
+                font-family: "IBM Plex Mono", monospace;
+            }
+
+            .plan .btn,
+            .plan .btn-ghost {
+                width: 100%;
+                justify-content: center;
+                font-size: 11px;
+                letter-spacing: 0.03em;
+                text-transform: uppercase;
+            }
+
+            .plan .meta {
+                display: block;
+                margin-top: 8px;
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 11px;
+                color: var(--dimmer);
+            }
+
+            .faq {
+                border-top: 1px solid var(--line);
+                margin-top: 24px;
+            }
+
+            .faq-item {
+                border-bottom: 1px solid var(--line-soft);
+            }
+
+            .faq-q {
+                width: 100%;
+                border: none;
+                background: transparent;
+                color: var(--fg);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 16px 2px;
+                text-align: left;
+                font-size: 16px;
+                cursor: pointer;
+            }
+
+            .faq-q span:last-child {
+                font-family: "IBM Plex Mono", monospace;
+                color: var(--dim);
+                transition: transform 0.16s var(--ease);
+            }
+
+            .faq-item.open .faq-q span:last-child {
+                transform: rotate(45deg);
+                color: var(--accent);
+            }
+
+            .faq-a {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.2s var(--ease);
+                color: var(--dim);
+                font-size: 14px;
+                padding-right: 8px;
+            }
+
+            .faq-item.open .faq-a {
+                max-height: 240px;
+                padding-bottom: 16px;
+            }
+
+            .cta {
+                border: 1px solid var(--line);
+                padding: 38px 34px;
+                margin: 90px 0 80px;
+                background: linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.015),
+                    rgba(255, 255, 255, 0.005)
+                );
+            }
+
+            .cta h2 {
+                font-size: clamp(2rem, 4vw, 3.1rem);
+                letter-spacing: -0.03em;
+                line-height: 1.1;
+                margin-bottom: 14px;
+            }
+
+            .cta p {
+                color: var(--dim);
+                max-width: 800px;
+                margin-bottom: 22px;
+            }
+
+            footer {
+                border-top: 1px solid var(--line);
+                padding: 30px 0 34px;
+            }
+
+            .foot {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .foot-brand {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 13px;
+                color: var(--fg);
+            }
+
+            .foot-meta {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 11px;
+                color: var(--dimmer);
+                display: inline-flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+            }
+
+            .foot-meta a {
+                color: var(--dim);
+            }
+
+            .foot-meta a:hover {
+                color: var(--fg);
+            }
+
+            .reveal {
+                opacity: 0;
+                transform: translateY(20px);
+                transition:
+                    opacity 0.6s var(--ease),
+                    transform 0.6s var(--ease);
+            }
+
+            .reveal.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            @media (max-width: 1020px) {
+                .shell,
+                .topbar-inner {
+                    width: min(var(--max), calc(100vw - 34px));
+                }
+
+                .hero,
+                .setup,
+                .pricing,
+                .testi-grid {
+                    grid-template-columns: 1fr;
+                    gap: 32px;
+                }
+
+                .setup-left {
+                    position: static;
+                }
+
+                .kpis {
+                    grid-template-columns: 1fr;
+                }
+
+                .service-item {
+                    grid-template-columns: 60px 1fr;
+                    gap: 16px;
+                }
+
+                .service-desc {
+                    grid-column: 1 / -1;
+                }
+
+                .why-item {
+                    grid-template-columns: 60px 1fr;
+                }
+
+                .top-actions .btn-ghost,
+                .top-actions .btn {
+                    display: none;
+                }
+
+                .menu-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .nav-group {
+                    position: absolute;
+                    top: 58px;
+                    left: 0;
+                    right: 0;
+                    padding: 14px 16px;
+                    margin: 0;
+                    border-bottom: 1px solid var(--line);
+                    background: rgba(7, 9, 9, 0.96);
+                    display: none;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+
+                .nav-group.open {
+                    display: flex;
+                }
+
+                .hero {
+                    padding-top: 138px;
+                }
+
+                .section {
+                    padding: 96px 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header class="topbar">
+            <div class="topbar-inner">
+                <a class="brand" href="#home">
+                    <i class="brand-dot"></i>
+                    <span>BlackClaw</span>
+                </a>
+
+                <nav class="nav-group" id="mobile-nav">
+                    <a href="#home">首页</a>
+                    <a href="#get-started">开始使用</a>
+                    <a href="#services">服务项</a>
+                    <a href="#pricing">定价</a>
+                    <a href="#faq">FAQ</a>
+                </nav>
+
+                <div class="top-actions">
+                    <a class="btn-micro" href="#">登录</a>
+                    <a class="btn-ghost" href="#services">服务项</a>
+                    <a class="btn" href="#pricing">部署 OpenClaw</a>
+                    <button
+                        class="menu-btn"
+                        id="menu-btn"
+                        aria-label="toggle menu"
+                    >
+                        ≡
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="notice">
+            <div class="notice-track">
+                <span class="notice-item">BlackClaw managed OpenClaw cloud</span
+                ><span class="notice-sep">/</span>
+                <span class="notice-item">zero DevOps</span
+                ><span class="notice-sep">/</span>
+                <span class="notice-item">dedicated isolated instance</span
+                ><span class="notice-sep">/</span>
+                <span class="notice-item">24/7 online runtime</span
+                ><span class="notice-sep">/</span>
+                <span class="notice-item">from $19/month billed yearly</span
+                ><span class="notice-sep">/</span>
+                <span class="notice-item">BlackClaw managed OpenClaw cloud</span
+                ><span class="notice-sep">/</span>
+                <span class="notice-item">zero DevOps</span
+                ><span class="notice-sep">/</span>
+                <span class="notice-item">dedicated isolated instance</span
+                ><span class="notice-sep">/</span>
+                <span class="notice-item">24/7 online runtime</span
+                ><span class="notice-sep">/</span>
+                <span class="notice-item">from $19/month billed yearly</span
+                ><span class="notice-sep">/</span>
+            </div>
+        </div>
+
+        <main id="home" class="shell">
+            <section class="hero">
+                <div>
+                    <div class="hero-tag reveal">
+                        <i></i>OpenClaw / Clawdbot Managed Hosting
+                    </div>
+                    <h1 class="reveal">
+                        你的 OpenClaw，<strong>无需运维</strong>，直接上线
+                    </h1>
+                    <p class="hero-sub reveal">
+                        BlackClaw 提供 OpenClaw
+                        云托管服务：部署、更新、监控、备份和安全隔离都由平台完成。
+                        你只要登录，就能拥有 7x24 在线的专属 AI 助手实例。
+                    </p>
+                    <div class="hero-cta reveal">
+                        <a class="btn" href="#pricing">立即开通</a>
+                        <a class="btn-ghost" href="#get-started"
+                            >查看开通流程</a
+                        >
+                    </div>
+                    <div class="kpis reveal">
+                        <div class="kpi">
+                            <strong>134K+</strong>
+                            <span>OpenClaw GitHub Stars（公开趋势）</span>
+                        </div>
+                        <div class="kpi">
+                            <strong>10K+</strong>
+                            <span>已有用户等待托管实例开通</span>
+                        </div>
+                        <div class="kpi">
+                            <strong>24/7</strong>
+                            <span>专属实例持续在线，不依赖本机开机</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal reveal">
+                    <div class="terminal-head">
+                        <div class="terminal-dots"><i></i><i></i><i></i></div>
+                        <span>instance console</span>
+                        <div style="width: 42px"></div>
+                    </div>
+                    <div class="terminal-body">
+                        <div>
+                            <span class="prompt">$</span>
+                            <span class="cmd" id="typed-cmd"></span
+                            ><span class="blink" id="typed-cursor"></span>
+                        </div>
+                        <div class="terminal-out" id="typed-output">
+                            <div
+                                style="margin: 10px 0 8px; color: var(--accent)"
+                            >
+                                BlackClaw deployment completed.
+                            </div>
+                            <div class="terminal-line">
+                                <b>PLAN</b><em>PRO</em>
+                            </div>
+                            <div class="terminal-line">
+                                <b>REGION</b><em>US-EAST</em>
+                            </div>
+                            <div class="terminal-line">
+                                <b>INSTANCE</b><em>openclaw-prod-7f91</em>
+                            </div>
+                            <div class="terminal-line">
+                                <b>STATUS</b><em>RUNNING</em>
+                            </div>
+                            <div class="terminal-line">
+                                <b>ETA</b><em>ready in 02:14</em>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="get-started">
+                <div class="setup">
+                    <div class="setup-left reveal">
+                        <div class="section-label">Get started</div>
+                        <h2 class="section-title">三步开通 BlackClaw 托管</h2>
+                        <p class="section-sub">
+                            不用手动配
+                            Docker、数据库、反向代理和模型配置。平台自动完成全链路部署。
+                        </p>
+                    </div>
+
+                    <div class="steps reveal">
+                        <article class="step-card">
+                            <div class="step-head">
+                                <span>STEP 01</span>
+                                <span>choose plan</span>
+                            </div>
+                            <div class="step-body">
+                                <div>
+                                    <span class="prompt">></span> 选择
+                                    <span class="highlight"
+                                        >Lite / Pro / Max</span
+                                    >
+                                    套餐
+                                </div>
+                                <div>
+                                    <span class="prompt">></span>
+                                    选择运行区域与计费方式
+                                </div>
+                            </div>
+                            <div class="copy-row">
+                                <small>套餐支持随时升级或取消</small>
+                                <button
+                                    class="btn-micro"
+                                    data-copy="Choose plan and region"
+                                >
+                                    Copy
+                                </button>
+                            </div>
+                        </article>
+
+                        <article class="step-card">
+                            <div class="step-head">
+                                <span>STEP 02</span>
+                                <span>auto deploy</span>
+                            </div>
+                            <div class="step-body">
+                                <div>
+                                    <span class="prompt">></span> BlackClaw
+                                    自动部署 OpenClaw 官方开源版本
+                                </div>
+                                <div>
+                                    <span class="prompt">></span>
+                                    自动注入监控、备份、更新策略
+                                </div>
+                            </div>
+                            <div class="copy-row">
+                                <small>默认启用隔离容器与传输加密</small>
+                                <button
+                                    class="btn-micro"
+                                    data-copy="BlackClaw auto deploys OpenClaw"
+                                >
+                                    Copy
+                                </button>
+                            </div>
+                        </article>
+
+                        <article class="step-card">
+                            <div class="step-head">
+                                <span>STEP 03</span>
+                                <span>start using</span>
+                            </div>
+                            <div class="step-body">
+                                <div>
+                                    <span class="prompt">></span>
+                                    登录后立即使用你的专属实例
+                                </div>
+                                <div>
+                                    <span class="prompt">></span>
+                                    通过聊天驱动自动化、开发和日常工作
+                                </div>
+                            </div>
+                            <div class="copy-row">
+                                <small>从下单到可用通常几分钟内完成</small>
+                                <button
+                                    class="btn-micro"
+                                    data-copy="Instance is ready in minutes"
+                                >
+                                    Copy
+                                </button>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="services">
+                <div class="section-label reveal">Service items</div>
+                <h2 class="section-title reveal">BlackClaw 服务项</h2>
+                <p class="section-sub reveal">
+                    以下服务项按 OpenClaw
+                    真实使用场景组织，既覆盖功能，也覆盖运行层能力。
+                </p>
+
+                <div class="services">
+                    <article class="service-item reveal">
+                        <div class="service-no">01</div>
+                        <h3 class="service-name">专属实例托管</h3>
+                        <p class="service-desc">
+                            每个用户独立实例，不与他人共享运行环境，资源可预测，隔离边界清晰。
+                        </p>
+                    </article>
+                    <article class="service-item reveal">
+                        <div class="service-no">02</div>
+                        <h3 class="service-name">自动部署与更新</h3>
+                        <p class="service-desc">
+                            托管层负责部署、补丁与版本更新，减少手工维护和升级风险。
+                        </p>
+                    </article>
+                    <article class="service-item reveal">
+                        <div class="service-no">03</div>
+                        <h3 class="service-name">工作流自动化执行</h3>
+                        <p class="service-desc">
+                            支持邮件处理、提醒、计划任务、跨应用流程触发，适合日常重复工作。
+                        </p>
+                    </article>
+                    <article class="service-item reveal">
+                        <div class="service-no">04</div>
+                        <h3 class="service-name">开发协作支持</h3>
+                        <p class="service-desc">
+                            可辅助代码审查、测试生成、问题定位和仓库任务推进，服务研发流程。
+                        </p>
+                    </article>
+                    <article class="service-item reveal">
+                        <div class="service-no">05</div>
+                        <h3 class="service-name">浏览器与系统控制</h3>
+                        <p class="service-desc">
+                            支持网页任务、表单操作、文件整理与系统动作编排，提升执行覆盖范围。
+                        </p>
+                    </article>
+                    <article class="service-item reveal">
+                        <div class="service-no">06</div>
+                        <h3 class="service-name">API 与业务系统集成</h3>
+                        <p class="service-desc">
+                            可连接 Slack、GitHub、数据库和内部 API，把 AI
+                            能力接入现有业务链路。
+                        </p>
+                    </article>
+                    <article class="service-item reveal">
+                        <div class="service-no">07</div>
+                        <h3 class="service-name">安全与备份机制</h3>
+                        <p class="service-desc">
+                            默认加密传输、隔离容器与周期备份，降低数据暴露和服务中断风险。
+                        </p>
+                    </article>
+                    <article class="service-item reveal">
+                        <div class="service-no">08</div>
+                        <h3 class="service-name">可扩容资源方案</h3>
+                        <p class="service-desc">
+                            根据负载提升 CPU / 内存 /
+                            磁盘规格，满足更高并发和更重任务需求。
+                        </p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section" id="why">
+                <div class="section-label reveal">Why BlackClaw</div>
+                <h2 class="section-title reveal">为什么不是自建，而是托管</h2>
+                <div class="why-list">
+                    <article class="why-item reveal">
+                        <div class="why-no">01</div>
+                        <div>
+                            <h3>你省掉的是“隐形成本”</h3>
+                            <p>
+                                自建不仅是服务器费用，还包括排障时间、升级风险、运维负担和可用性波动。
+                            </p>
+                        </div>
+                    </article>
+                    <article class="why-item reveal">
+                        <div class="why-no">02</div>
+                        <div>
+                            <h3>你买到的是“持续可用”</h3>
+                            <p>
+                                BlackClaw
+                                保证实例在线与可控，不需要你持续盯服务状态和日志告警。
+                            </p>
+                        </div>
+                    </article>
+                    <article class="why-item reveal">
+                        <div class="why-no">03</div>
+                        <div>
+                            <h3>你得到的是“可复制”</h3>
+                            <p>
+                                相同模板可在不同团队快速复制，避免每次从零搭环境导致标准不一致。
+                            </p>
+                        </div>
+                    </article>
+                    <article class="why-item reveal">
+                        <div class="why-no">04</div>
+                        <div>
+                            <h3>你专注的是“任务结果”</h3>
+                            <p>
+                                把注意力放在 AI
+                                带来的产出上，而不是部署脚本、端口冲突和依赖兼容。
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section" id="voices">
+                <div class="section-label reveal">Signals</div>
+                <h2 class="section-title reveal">市场信号已经很明确</h2>
+                <p class="section-sub reveal">
+                    OpenClaw 需求在上涨，用户更需要稳定入口而不是复杂安装流程。
+                </p>
+                <div class="testi-grid">
+                    <article class="quote reveal">
+                        <p>
+                            “如果 AI
+                            助手可以稳定在线并连接业务系统，很多重复工作会直接消失。”
+                        </p>
+                        <small>Product lead / SaaS</small>
+                    </article>
+                    <article class="quote reveal">
+                        <p>
+                            “以前团队每次换机器都要重装一次，现在统一托管后运维压力明显下降。”
+                        </p>
+                        <small>Engineering manager</small>
+                    </article>
+                    <article class="quote reveal">
+                        <p>
+                            “自动化能不能落地，关键在可用性和安全边界，不在 demo
+                            漂不漂亮。”
+                        </p>
+                        <small>Founder / AI workflow</small>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section" id="pricing">
+                <div class="pricing">
+                    <div class="pricing-main reveal">
+                        <div class="section-label">Pricing</div>
+                        <h2 class="section-title">简单透明</h2>
+                        <div class="price-big" id="price-big">
+                            $29<span>/mo</span>
+                        </div>
+                        <div class="price-note" id="price-note">
+                            月付价格，随时取消
+                        </div>
+                        <div
+                            class="billing-switch"
+                            role="tablist"
+                            aria-label="billing"
+                        >
+                            <button
+                                class="active"
+                                type="button"
+                                data-billing="monthly"
+                            >
+                                月付
+                            </button>
+                            <button type="button" data-billing="yearly">
+                                年付（省 34%）
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="plan-grid reveal">
+                        <article
+                            class="plan"
+                            data-monthly="29"
+                            data-yearly="19"
+                            data-meta-monthly="按月灵活"
+                            data-meta-yearly="按年结算，折算月价"
+                        >
+                            <div class="plan-head">
+                                <span class="plan-name">Lite</span>
+                                <span class="plan-price"
+                                    >$29 <small>/mo</small></span
+                                >
+                            </div>
+                            <p class="plan-desc">适合个人与轻量任务</p>
+                            <ul>
+                                <li>2 vCPU / 4GB RAM / 40GB SSD</li>
+                                <li>自动更新与每日备份</li>
+                                <li>专属实例隔离运行</li>
+                            </ul>
+                            <a class="btn-ghost" href="#">开始 Lite</a>
+                            <small class="meta">按月灵活</small>
+                        </article>
+
+                        <article
+                            class="plan"
+                            data-monthly="59"
+                            data-yearly="39"
+                            data-meta-monthly="最受欢迎"
+                            data-meta-yearly="按年结算，折算月价"
+                        >
+                            <div class="plan-head">
+                                <span class="plan-name">Pro</span>
+                                <span class="plan-price"
+                                    >$59 <small>/mo</small></span
+                                >
+                            </div>
+                            <p class="plan-desc">适合高频使用与团队协作</p>
+                            <ul>
+                                <li>4 vCPU / 8GB RAM / 80GB SSD</li>
+                                <li>更高并发与更稳负载</li>
+                                <li>优先支持与告警通道</li>
+                            </ul>
+                            <a class="btn" href="#">开始 Pro</a>
+                            <small class="meta">最受欢迎</small>
+                        </article>
+
+                        <article
+                            class="plan"
+                            data-monthly="119"
+                            data-yearly="79"
+                            data-meta-monthly="高负载优先"
+                            data-meta-yearly="按年结算，折算月价"
+                        >
+                            <div class="plan-head">
+                                <span class="plan-name">Max</span>
+                                <span class="plan-price"
+                                    >$119 <small>/mo</small></span
+                                >
+                            </div>
+                            <p class="plan-desc">适合高性能和大规模任务</p>
+                            <ul>
+                                <li>8 vCPU / 16GB RAM / 160GB SSD</li>
+                                <li>重任务稳定执行</li>
+                                <li>资源扩容策略支持</li>
+                            </ul>
+                            <a class="btn-ghost" href="#">开始 Max</a>
+                            <small class="meta">高负载优先</small>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="faq">
+                <div class="section-label reveal">FAQ</div>
+                <h2 class="section-title reveal">常见问题</h2>
+                <div class="faq reveal">
+                    <article class="faq-item open">
+                        <button class="faq-q" type="button">
+                            <span>BlackClaw 是 OpenClaw 官方吗？</span
+                            ><span>+</span>
+                        </button>
+                        <div class="faq-a">
+                            不是。BlackClaw 是独立托管服务，负责替你运行
+                            OpenClaw 官方开源版本。
+                        </div>
+                    </article>
+                    <article class="faq-item">
+                        <button class="faq-q" type="button">
+                            <span>是否共享实例？</span><span>+</span>
+                        </button>
+                        <div class="faq-a">
+                            不是共享机器人。每个订阅都对应独立实例，运行环境彼此隔离。
+                        </div>
+                    </article>
+                    <article class="faq-item">
+                        <button class="faq-q" type="button">
+                            <span>多久可以用上？</span><span>+</span>
+                        </button>
+                        <div class="faq-a">
+                            一般几分钟内可用。高峰时会稍有排队，但会在控制台显示进度。
+                        </div>
+                    </article>
+                    <article class="faq-item">
+                        <button class="faq-q" type="button">
+                            <span>支持月付和年付切换吗？</span><span>+</span>
+                        </button>
+                        <div class="faq-a">
+                            支持。你可以在账单周期结束前切换方案，系统会自动按新周期计费。
+                        </div>
+                    </article>
+                    <article class="faq-item">
+                        <button class="faq-q" type="button">
+                            <span>数据会被拿去训练模型吗？</span><span>+</span>
+                        </button>
+                        <div class="faq-a">
+                            默认不用于模型训练。BlackClaw
+                            仅负责托管和运行，不会将你的业务数据用于训练。
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="cta reveal">
+                <h2>把 OpenClaw 交给 BlackClaw 托管</h2>
+                <p>
+                    从部署到稳定运行，BlackClaw 负责底层复杂度。你只管让 AI
+                    助手为业务创造结果。
+                </p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap">
+                    <a class="btn" href="#pricing">立即开通</a>
+                    <a class="btn-ghost" href="#services">查看服务项</a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="shell foot">
+                <div class="foot-brand">BlackClaw.ai</div>
+                <div class="foot-meta">
+                    <a href="#get-started">Get started</a>
+                    <a href="#services">Services</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#faq">FAQ</a>
+                    <span>2026 · v1.0.2</span>
+                </div>
+            </div>
+        </footer>
+
+        <script>
+            (function () {
+                var menuBtn = document.getElementById("menu-btn");
+                var mobileNav = document.getElementById("mobile-nav");
+
+                if (menuBtn && mobileNav) {
+                    menuBtn.addEventListener("click", function () {
+                        mobileNav.classList.toggle("open");
+                    });
+
+                    mobileNav.querySelectorAll("a").forEach(function (link) {
+                        link.addEventListener("click", function () {
+                            mobileNav.classList.remove("open");
+                        });
+                    });
+                }
+
+                document
+                    .querySelectorAll("[data-copy]")
+                    .forEach(function (btn) {
+                        btn.addEventListener("click", function () {
+                            var text = btn.getAttribute("data-copy") || "";
+                            var original = btn.textContent;
+                            navigator.clipboard
+                                .writeText(text)
+                                .then(function () {
+                                    btn.textContent = "Copied";
+                                    setTimeout(function () {
+                                        btn.textContent = original;
+                                    }, 1200);
+                                });
+                        });
+                    });
+
+                var cmdEl = document.getElementById("typed-cmd");
+                var cursorEl = document.getElementById("typed-cursor");
+                var outEl = document.getElementById("typed-output");
+                var cmdText = "blackclaw deploy --plan pro --region us-east";
+
+                function typeLoop() {
+                    var idx = 0;
+                    cmdEl.textContent = "";
+                    outEl.style.display = "none";
+                    cursorEl.style.display = "inline-block";
+
+                    function next() {
+                        if (idx < cmdText.length) {
+                            cmdEl.textContent = cmdText.slice(0, idx + 1);
+                            idx += 1;
+                            setTimeout(next, 34 + Math.random() * 22);
+                        } else {
+                            setTimeout(function () {
+                                cursorEl.style.display = "none";
+                                outEl.style.display = "block";
+                                setTimeout(typeLoop, 3600);
+                            }, 450);
+                        }
+                    }
+
+                    next();
+                }
+
+                setTimeout(typeLoop, 700);
+
+                var revealObs = new IntersectionObserver(
+                    function (entries) {
+                        entries.forEach(function (entry) {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add("visible");
+                                revealObs.unobserve(entry.target);
+                            }
+                        });
+                    },
+                    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+                );
+
+                document.querySelectorAll(".reveal").forEach(function (el) {
+                    revealObs.observe(el);
+                });
+
+                var billingBtns = document.querySelectorAll("[data-billing]");
+                var plans = document.querySelectorAll(".plan");
+                var big = document.getElementById("price-big");
+                var note = document.getElementById("price-note");
+
+                function setBilling(mode) {
+                    billingBtns.forEach(function (btn) {
+                        btn.classList.toggle(
+                            "active",
+                            btn.getAttribute("data-billing") === mode,
+                        );
+                    });
+
+                    plans.forEach(function (plan) {
+                        var price = plan.getAttribute(
+                            mode === "monthly" ? "data-monthly" : "data-yearly",
+                        );
+                        var meta = plan.getAttribute(
+                            mode === "monthly"
+                                ? "data-meta-monthly"
+                                : "data-meta-yearly",
+                        );
+                        var priceNode = plan.querySelector(".plan-price");
+                        var metaNode = plan.querySelector(".meta");
+
+                        if (priceNode)
+                            priceNode.innerHTML =
+                                "$" + price + " <small>/mo</small>";
+                        if (metaNode) metaNode.textContent = meta;
+                    });
+
+                    if (big) {
+                        var first = mode === "monthly" ? "29" : "19";
+                        big.innerHTML = "$" + first + "<span>/mo</span>";
+                    }
+
+                    if (note) {
+                        note.textContent =
+                            mode === "monthly"
+                                ? "月付价格，随时取消"
+                                : "年付折算月价，按年结算并省 34%";
+                    }
+                }
+
+                billingBtns.forEach(function (btn) {
+                    btn.addEventListener("click", function () {
+                        setBilling(btn.getAttribute("data-billing"));
+                    });
+                });
+
+                setBilling("monthly");
+
+                document.querySelectorAll(".faq-item").forEach(function (item) {
+                    var q = item.querySelector(".faq-q");
+                    if (!q) return;
+
+                    q.addEventListener("click", function () {
+                        var open = item.classList.contains("open");
+                        document
+                            .querySelectorAll(".faq-item")
+                            .forEach(function (x) {
+                                x.classList.remove("open");
+                            });
+                        if (!open) item.classList.add("open");
+                    });
+                });
+            })();
+        </script>
+    </body>
+</html>
