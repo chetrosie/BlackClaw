@@ -1,0 +1,40 @@
+name: Deploy Pages Static
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - index.html
+      - dashboard.html
+      - public/**
+      - scripts/prepare-static.sh
+      - scripts/cf-pages-deploy.sh
+      - .github/workflows/deploy-pages.yml
+      - VERSION
+      - README.md
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare static bundle
+        run: bash ./scripts/prepare-static.sh
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROJECT_NAME: ${{ vars.CF_PAGES_PROJECT || 'blackclaw' }}
+        run: npx wrangler@4 pages deploy ./dist-static --project-name "$PROJECT_NAME" --branch main

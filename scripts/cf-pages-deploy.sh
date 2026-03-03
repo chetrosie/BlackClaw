@@ -11,8 +11,11 @@ fi
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-echo "Deploying current directory to Cloudflare Pages"
+bash ./scripts/prepare-static.sh
+
+echo "Deploying static bundle to Cloudflare Pages"
 echo "Project: ${PROJECT_NAME}"
 echo "Branch:  ${BRANCH}"
 
-npx wrangler@4 pages deploy . --project-name "$PROJECT_NAME" --branch "$BRANCH"
+echo "Directory: ./dist-static"
+npx wrangler@4 pages deploy ./dist-static --project-name "$PROJECT_NAME" --branch "$BRANCH"

@@ -1,0 +1,7 @@
+.git
+.github
+node_modules
+.wrangler
+dist-static
+npm-debug.log*
+.DS_Store

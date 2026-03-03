@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.3 - 2026-03-03
+
+- Added GitHub Actions workflows:
+  - `deploy-pages.yml`: auto deploy static site to Cloudflare Pages on `main`
+  - `backend-ci.yml`: backend Node syntax check + Docker image build check
+- Added static bundle preparation script `scripts/prepare-static.sh`.
+- Updated Cloudflare deploy script to deploy `./dist-static` instead of project root.
+- Added containerization files:
+  - `Dockerfile`
+  - `.dockerignore`
+- Updated project scripts (`prepare:static`) and deployment documentation.
+- Synced version markers to `v1.0.3` in `VERSION`, `index.html`, `dashboard.html`, `server/app.js`, `README.md`, `CHANGELOG.md`, `package.json`.
+
 ## v1.0.2 - 2026-03-03
 
 - Added runnable MVP backend for BlackClaw control-plane flow:

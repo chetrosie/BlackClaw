@@ -4,4 +4,5 @@ npm-debug.log*
 .wrangler
 .env
 .env.*
+dist-static
 data/db.json.bak
