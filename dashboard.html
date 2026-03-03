@@ -102,6 +102,11 @@
       gap: 8px;
       flex-wrap: wrap;
     }
+    .api-grid {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+    }
     pre {
       margin: 0;
       border: 1px solid var(--line);
@@ -139,6 +144,7 @@
     .err { color: #ff8b8b; }
     @media (max-width: 980px) {
       .grid { grid-template-columns: 1fr; }
+      .api-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -149,8 +155,19 @@
         <strong>BlackClaw Control Plane Dashboard</strong>
         <div class="hint">MVP chain: login -> simulate billing -> provisioning job -> running instance</div>
       </div>
-      <div class="mono">version v1.0.6</div>
+      <div class="mono">version v1.0.7</div>
     </div>
+
+    <section class="card">
+      <div class="title">API Endpoint</div>
+      <div class="api-grid">
+        <input id="api-base" type="text" placeholder="https://api.blackclaw.ai" />
+        <button class="btn-subtle" id="save-api-btn">Save API Base</button>
+        <button class="btn-subtle" id="reset-api-btn">Use Current Origin</button>
+      </div>
+      <div class="hint">Current API Base: <span class="mono" id="api-current"></span></div>
+      <div class="hint">Pages 前后端分离部署时，请配置为后端域名。</div>
+    </section>
 
     <div class="grid">
       <section class="card">
@@ -238,7 +255,36 @@
   </div>
 
   <script>
-    const state = { userId: null };
+    const API_BASE_STORAGE_KEY = "blackclaw.apiBase";
+
+    function normalizeBaseUrl(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "";
+
+      try {
+        const parsed = new URL(raw);
+        if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return "";
+        return parsed.origin;
+      } catch {
+        return "";
+      }
+    }
+
+    function resolveInitialApiBase() {
+      const queryBase = normalizeBaseUrl(new URLSearchParams(window.location.search).get("apiBase"));
+      if (queryBase) {
+        localStorage.setItem(API_BASE_STORAGE_KEY, queryBase);
+        return queryBase;
+      }
+
+      const storedBase = normalizeBaseUrl(localStorage.getItem(API_BASE_STORAGE_KEY));
+      return storedBase || window.location.origin;
+    }
+
+    const state = {
+      userId: null,
+      apiBase: resolveInitialApiBase(),
+    };
 
     const resultBox = document.getElementById("result-json");
     const statusLine = document.getElementById("status-line");
@@ -249,8 +295,20 @@
       statusLine.className = ok ? "hint ok" : "hint err";
     }
 
+    function buildApiUrl(path) {
+      if (/^https?:\/\//i.test(path)) return path;
+      const safePath = path.startsWith("/") ? path : `/${path}`;
+      return `${state.apiBase}${safePath}`;
+    }
+
+    function updateApiBaseUI() {
+      document.getElementById("api-base").value = state.apiBase;
+      document.getElementById("api-current").textContent = state.apiBase;
+    }
+
     async function api(path, options = {}) {
-      const res = await fetch(path, {
+      const url = buildApiUrl(path);
+      const res = await fetch(url, {
         headers: { "Content-Type": "application/json", ...(options.headers || {}) },
         ...options,
       });
@@ -319,6 +377,38 @@
       document.getElementById("events-json").textContent = JSON.stringify(events, null, 2);
     }
 
+    document.getElementById("save-api-btn").addEventListener("click", async () => {
+      const nextBase = normalizeBaseUrl(document.getElementById("api-base").value);
+      if (!nextBase) {
+        showResult({ error: "API Base URL 格式不合法" }, false);
+        return;
+      }
+
+      state.apiBase = nextBase;
+      localStorage.setItem(API_BASE_STORAGE_KEY, nextBase);
+      updateApiBaseUI();
+
+      try {
+        await refreshAll();
+        showResult({ saved: true, apiBase: state.apiBase }, true);
+      } catch (err) {
+        showResult({ error: err.message, apiBase: state.apiBase }, false);
+      }
+    });
+
+    document.getElementById("reset-api-btn").addEventListener("click", async () => {
+      state.apiBase = window.location.origin;
+      localStorage.removeItem(API_BASE_STORAGE_KEY);
+      updateApiBaseUI();
+
+      try {
+        await refreshAll();
+        showResult({ reset: true, apiBase: state.apiBase }, true);
+      } catch (err) {
+        showResult({ error: err.message, apiBase: state.apiBase }, false);
+      }
+    });
+
     document.getElementById("login-btn").addEventListener("click", async () => {
       try {
         const email = document.getElementById("email").value.trim();
@@ -367,6 +457,7 @@
       }
     });
 
+    updateApiBaseUI();
     refreshAll().catch((err) => {
       showResult({ error: err.message }, false);
     });

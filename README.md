@@ -1,15 +1,20 @@
 # BlackClaw MVP (OpenClaw 托管服务)
 
 ## 版本
-- 当前版本：`v1.0.6`
+- 当前版本：`v1.0.7`
 - 版本策略：`MAJOR.MINOR.PATCH`
 - 迭代规则：每次功能/页面修改默认递增 `PATCH`
 
-## v1.0.6 新增能力
-1. 数据层升级为可插拔：`JSON` / `PostgreSQL`
-2. Stripe webhook 幂等处理：基于 `event.id` 去重，防止重复开通
-3. Provider 抽象升级：`mock` / `http` 驱动可切换
-4. API 与任务编排统一异步化（DB 调用全部 `async`）
+## v1.0.7 新增能力
+1. 新增 Cloudflare 部署环境矩阵文档：`docs/cloudflare-env-matrix.md`
+2. Dashboard 新增 API Base 可配置（支持 Pages 前后端分离）
+3. 完成 Pages/Workers 变量落地清单（命令级）
+
+## v1.0.6 能力
+1. 数据层可插拔：`JSON` / `PostgreSQL`
+2. Stripe webhook 幂等：基于 `event.id` 去重
+3. Provider 驱动切换：`mock` / `http`
+4. API 与任务编排异步化
 
 ## 当前能力（MVP）
 1. 营销页（`index.html`）
@@ -67,6 +72,19 @@ npm run dev
 - 控制台：`http://localhost:8787/dashboard.html`
 - 健康检查：`http://localhost:8787/api/health`
 
+## Dashboard API Base（v1.0.7）
+当你把页面部署到 `*.pages.dev`，后端部署在其他域名时：
+
+1. 打开 `dashboard.html`
+2. 在 `API Endpoint` 区域填写后端地址（例如 `https://api.blackclaw.ai`）
+3. 点击 `Save API Base`
+
+也可用 URL 参数一次性注入：
+
+```text
+https://blackclaw.pages.dev/dashboard.html?apiBase=https://api.blackclaw.ai
+```
+
 ## 切换 PostgreSQL
 1. 准备数据库（本地或云）
 2. 设置环境变量：
@@ -103,6 +121,11 @@ PROVIDER_HTTP_BASE_URL=https://your-orchestrator.example.com
 PROVIDER_HTTP_API_KEY=xxx
 PROVIDER_HTTP_TIMEOUT_MS=5000
 ```
+
+## Cloudflare 部署矩阵
+完整环境变量和命令清单见：
+
+- `docs/cloudflare-env-matrix.md`
 
 ## Pages 部署模式（当前）
 - 主模式：Cloudflare Pages 直接关联 GitHub 自动部署

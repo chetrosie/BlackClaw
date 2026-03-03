@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.7 - 2026-03-03
+
+- Added Cloudflare deployment environment matrix and runbook:
+  - `docs/cloudflare-env-matrix.md`
+  - includes Pages/Workers variable strategy and command-level examples
+  - includes 4 ready-to-use profiles (Local Demo / Staging / Production Core / Production Full)
+- Upgraded `dashboard.html` with configurable API endpoint:
+  - added `API Endpoint` panel
+  - supports persistent API base via `localStorage` (`blackclaw.apiBase`)
+  - supports one-time query injection: `?apiBase=https://api.blackclaw.ai`
+  - resolves front/back-domain split for Cloudflare Pages deployments
+- Synced version markers to `v1.0.7` in `VERSION`, `index.html`, `dashboard.html`, `server/app.js`, `README.md`, and `package.json`.
+
 ## v1.0.6 - 2026-03-03
 
 - Upgraded data layer to adapter architecture with async API:
