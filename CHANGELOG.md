@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.6 - 2026-03-03
+
+- Upgraded data layer to adapter architecture with async API:
+  - `server/lib/db.js` now routes through pluggable adapters
+  - added `server/lib/db/jsonAdapter.js`
+  - added `server/lib/db/postgresAdapter.js`
+  - added Postgres bootstrap schema `server/lib/db/migrations/001_init.sql`
+- Added PostgreSQL runtime support with env-driven driver selection:
+  - `DB_DRIVER=json|postgres`
+  - `DATABASE_URL`, `DATABASE_POOL_MAX`, `DATABASE_SSL`
+- Added Stripe webhook idempotency:
+  - webhook payload now tracks `event.id`
+  - dedupe state persisted in `webhook_events`
+  - duplicate events return safe `duplicate: true` response
+- Added webhook signature modes:
+  - `WEBHOOK_MODE=mock` keeps existing `x-mock-signature`
+  - `WEBHOOK_MODE=stripe` validates `stripe-signature`
+- Upgraded provider abstraction:
+  - added registry `server/providers/index.js`
+  - added `server/providers/httpProvider.js`
+  - kept `mockProvider` as default
+- Refactored API routes + provision worker to full async DB calls.
+- Added new observability endpoint: `GET /api/webhook-events`.
+- Updated CI syntax check to cover all backend JS files under `server/**/*.js`.
+- Synced version markers to `v1.0.6` in `VERSION`, `index.html`, `dashboard.html`, `server/app.js`, `README.md`, `CHANGELOG.md`, and `package.json`.
+
 ## v1.0.5 - 2026-03-03
 
 - Updated deployment strategy to match current setup:

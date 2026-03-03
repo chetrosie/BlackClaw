@@ -1,6 +1,8 @@
 const db = require("../lib/db");
-const provider = require("../providers/mockProvider");
+const { getProvider } = require("../providers");
 const config = require("../config");
+
+const provider = getProvider();
 
 let workerTimer = null;
 let workerBusy = false;
@@ -8,36 +10,36 @@ let workerBusy = false;
 async function processProvisionJob() {
   if (workerBusy) return;
 
-  const job = db.getQueuedJob("provision_instance");
+  const job = await db.getQueuedJob("provision_instance");
   if (!job) return;
 
   workerBusy = true;
 
   try {
-    db.markJobRunning(job.id);
+    await db.markJobRunning(job.id);
     const instanceId = job.payload.instanceId;
 
-    const instances = db.listInstances();
-    const instance = instances.find((i) => i.id === instanceId);
+    const instances = await db.listInstances();
+    const instance = instances.find((item) => item.id === instanceId);
     if (!instance) throw new Error(`instance not found: ${instanceId}`);
 
     const provisioned = await provider.provisionInstance(instance);
 
-    db.updateInstance(instance.id, {
+    await db.updateInstance(instance.id, {
       status: provisioned.status,
       providerRef: provisioned.providerRef,
       endpoint: provisioned.endpoint,
     });
 
-    db.addEvent({
+    await db.addEvent({
       type: "instance.provisioned",
       message: `Instance ${instance.id} is running`,
       payload: { instanceId: instance.id, endpoint: provisioned.endpoint },
     });
 
-    db.markJobDone(job.id);
+    await db.markJobDone(job.id);
   } catch (err) {
-    db.markJobFailed(job.id, err.message || String(err));
+    await db.markJobFailed(job.id, err.message || String(err));
   } finally {
     workerBusy = false;
   }
@@ -46,6 +48,9 @@ async function processProvisionJob() {
 function startWorker() {
   if (workerTimer) return;
   workerTimer = setInterval(processProvisionJob, config.runtime.workerIntervalMs);
+  processProvisionJob().catch((err) => {
+    console.error("[provisioner] boot run failed", err);
+  });
 }
 
 function stopWorker() {

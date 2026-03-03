@@ -1,119 +1,124 @@
 # BlackClaw MVP (OpenClaw 托管服务)
 
 ## 版本
-- 当前版本：`v1.0.5`
+- 当前版本：`v1.0.6`
 - 版本策略：`MAJOR.MINOR.PATCH`
-- 迭代规则：每次功能/页面修改默认递增 `PATCH`（如 `v1.0.6`）
+- 迭代规则：每次功能/页面修改默认递增 `PATCH`
 
-## 当前能力
-这是一个可跑通的 MVP 链路：
+## v1.0.6 新增能力
+1. 数据层升级为可插拔：`JSON` / `PostgreSQL`
+2. Stripe webhook 幂等处理：基于 `event.id` 去重，防止重复开通
+3. Provider 抽象升级：`mock` / `http` 驱动可切换
+4. API 与任务编排统一异步化（DB 调用全部 `async`）
 
-1. 营销页（`index.html`，含 About 项目简介模块）
+## 当前能力（MVP）
+1. 营销页（`index.html`）
 2. 控制台（`dashboard.html`）
-3. API（`server/*`）
-4. 模拟支付回调（替代 Stripe UI）
+3. 控制面 API（`server/*`）
+4. 模拟购买与 webhook 回调
 5. 自动创建订阅 + 实例
-6. 后台任务把实例从 `provisioning` 变成 `running`
+6. 后台任务把实例从 `provisioning` 推进到 `running`
 
-即：`登录 -> 模拟购买 -> 触发 webhook -> 创建实例 -> 异步编排上线`。
+链路：`登录 -> 购买回调 -> 订阅生效 -> 创建实例 -> 异步编排上线`
 
-## 架构链路
+## 架构
 
 ### 展示层
-- Cloudflare Pages（静态站）
+- Cloudflare Pages（静态）
 - 文件：`index.html`, `dashboard.html`
 
 ### 控制层
-- `Node.js + Express` API
+- Node.js + Express
 - 文件：`server/app.js`
 
-### 计费层（当前为模拟）
-- 模拟：`POST /api/dev/simulate-purchase`
-- 真实接入入口：`POST /api/webhooks/stripe`
+### 计费回调层
+- 入口：`POST /api/webhooks/stripe`
+- 模式：
+  - `WEBHOOK_MODE=mock`（使用 `x-mock-signature`）
+  - `WEBHOOK_MODE=stripe`（校验 `stripe-signature`）
+- 幂等：`webhook_events` 记录已处理事件，重复 `event.id` 直接忽略
 
 ### 编排层
 - Worker：`server/services/provisioner.js`
-- Provider 适配器：`server/providers/mockProvider.js`
+- Provider Registry：`server/providers/index.js`
+- Provider 驱动：
+  - `mockProvider`（本地模拟）
+  - `httpProvider`（对接外部编排服务）
 
 ### 数据层
-- JSON DB：`data/db.json`
-- 实体：`users / subscriptions / instances / jobs / events`
+- 适配入口：`server/lib/db.js`
+- 适配实现：
+  - `server/lib/db/jsonAdapter.js`
+  - `server/lib/db/postgresAdapter.js`
+- Postgres 初始化 SQL：`server/lib/db/migrations/001_init.sql`
 
-## 目录结构
-
-```text
-blackclaw-clone/
-  index.html
-  dashboard.html
-  server/
-  data/db.json
-  scripts/
-    prepare-static.sh
-    cf-pages-create.sh
-    cf-pages-deploy.sh
-  .github/workflows/
-    deploy-pages.yml
-    backend-ci.yml
-  Dockerfile
-  package.json
-  VERSION
-  CHANGELOG.md
-```
-
-## 本地运行
-
+## 本地运行（JSON 模式）
 ```bash
 cd /Users/chuen/Projects/blackclaw-clone
 npm install
+cp .env.example .env
 npm run dev
 ```
+
+默认使用 JSON 文件 `data/db.json`。
 
 访问：
 - 营销页：`http://localhost:8787/`
 - 控制台：`http://localhost:8787/dashboard.html`
 - 健康检查：`http://localhost:8787/api/health`
 
-## Dashboard 演示流程
-
-1. 点击 `Login / Create User`
-2. 点击 `Trigger checkout.session.completed`
-3. 观察 `Jobs` 从 `queued/running` 到 `done`
-4. 观察 `Instances` 从 `provisioning` 到 `running`
-
-## Pages 部署模式（当前）
-
-你当前已改为：**Cloudflare Pages 直接关联 GitHub 仓库自动部署**（推荐）。
-
-- `push main` 后由 Cloudflare 原生 Git Integration 触发部署。
-- 仓库里的 `deploy-pages.yml` 已改为 **仅手动触发**（应急备用）。
-
-## GitHub Actions（当前保留）
-
-### 1) deploy-pages（手动）
-文件：`.github/workflows/deploy-pages.yml`
-触发：`workflow_dispatch`（手动）
-用途：当 Cloudflare Git Integration 异常时，手工触发备用部署。
-
-### 2) backend-ci（自动）
-文件：`.github/workflows/backend-ci.yml`
-触发：后端相关文件 `push/pull_request`
-
-包含：
-- Node 依赖安装与语法检查
-- `docker build` 构建检查（`Dockerfile`）
-
-## Cloudflare Pages（手动备用命令）
+## 切换 PostgreSQL
+1. 准备数据库（本地或云）
+2. 设置环境变量：
 
 ```bash
-cd /Users/chuen/Projects/blackclaw-clone
-npm run cf:login
-PROJECT_NAME=blackclaw npm run cf:deploy
+DB_DRIVER=postgres
+DATABASE_URL=postgres://user:password@host:5432/blackclaw
+DATABASE_SSL=false
 ```
 
-## 生产化下一步
+3. 启动服务：
 
-1. 用真实云厂商 API 替换 `mockProvider`
-2. 接入真实 Stripe Checkout + Webhook 签名
-3. JSON DB 升级 Postgres
-4. 加用户鉴权（JWT/session）
-5. 加日志、告警、配额、审计
+```bash
+npm run dev
+```
+
+服务启动时会自动执行 `001_init.sql` 建表。
+
+## Webhook 幂等验证
+同一个 `event.id` 连续发送两次到 `POST /api/webhooks/stripe`：
+- 第一次：正常处理
+- 第二次：返回 `duplicate: true`
+
+可查看记录：`GET /api/webhook-events`
+
+## Provider 切换
+- `PROVIDER_DRIVER=mock`：默认本地模拟
+- `PROVIDER_DRIVER=http`：调用外部编排 API
+
+当使用 `http` 时需配置：
+
+```bash
+PROVIDER_HTTP_BASE_URL=https://your-orchestrator.example.com
+PROVIDER_HTTP_API_KEY=xxx
+PROVIDER_HTTP_TIMEOUT_MS=5000
+```
+
+## Pages 部署模式（当前）
+- 主模式：Cloudflare Pages 直接关联 GitHub 自动部署
+- 备用模式：`.github/workflows/deploy-pages.yml` 手动触发
+
+## GitHub Actions
+1. `backend-ci.yml`
+- 自动安装依赖
+- 校验 `server/**/*.js` 语法
+- 进行 `docker build` 构建检查
+
+2. `deploy-pages.yml`
+- 手动触发备用部署
+
+## 生产化下一步
+1. 接入真实 Stripe Checkout Session 创建
+2. Provider `http` 增加重试、熔断、回调签名校验
+3. 增加鉴权（JWT/Session）与 RBAC
+4. 增加审计日志、告警和指标观测
