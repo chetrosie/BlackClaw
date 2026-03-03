@@ -146,7 +146,7 @@ app.get(
   asyncRoute(async (_req, res) => {
     ok(res, {
       service: "blackclaw-api",
-      version: "v1.0.8",
+      version: "v1.0.9",
       dbDriver: config.storage.driver,
       providerDriver: config.provider.driver,
       now: new Date().toISOString(),

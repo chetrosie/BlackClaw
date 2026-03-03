@@ -5,7 +5,7 @@
 - `English`: BlackClaw is a fully managed OpenClaw hosting project that lets users complete signup, purchase, provisioning, and operations from a web control plane.
 
 ## 版本 | Version
-- `当前版本 / Current`: `v1.0.8`
+- `当前版本 / Current`: `v1.0.9`
 - `版本策略 / Policy`: `MAJOR.MINOR.PATCH`
 - `迭代规则 / Release rule`: 每次功能或页面更新默认递增 `PATCH`.
 
@@ -16,6 +16,31 @@
 4. `计费回调 / Billing webhook`：Stripe 风格验签 + 幂等去重
 5. `编排层 / Provisioning layer`：Provider 抽象（`mock` / `http`）
 6. `前端 / Frontend`：Cloudflare Pages 静态站（Landing + Dashboard）
+
+## 套餐与计费说明 | Plans & Billing
+
+### 套餐模板 | Plan Template
+| 套餐 Plan | 月付 Monthly | 年付 Yearly | 适用场景 Use Case |
+| --- | --- | --- | --- |
+| Lite | `$19` | `$190` | 个人与轻量测试 Personal / light workloads |
+| Pro | `$49` | `$490` | 小团队生产环境 Team production |
+| Max | `$99` | `$990` | 高并发与多实例 Advanced workloads |
+
+### 计费规则模板 | Billing Policy Template
+1. `中文`：默认按月自动续费；年付享受折扣。
+2. `English`: Subscriptions renew automatically. Yearly billing includes discounted pricing.
+3. `中文`：支持升级/降级，按剩余周期比例结算（proration）。
+4. `English`: Upgrade/downgrade uses prorated adjustments for the remaining billing period.
+5. `中文`：取消订阅后服务持续到当前计费周期结束。
+6. `English`: Cancellation takes effect at period end unless immediate cancellation is explicitly enabled.
+
+### 支付方式模板 | Payment Methods Template
+- `中文`：支持信用卡、Apple Pay、Google Pay（以支付通道能力为准）。
+- `English`: Credit cards, Apple Pay, and Google Pay are supported based on payment provider capabilities.
+
+### 退款政策模板 | Refund Policy Template
+- `中文`：默认不自动退款；如遇重复扣费或系统故障，按工单审核处理。
+- `English`: No automatic refunds by default. Duplicate charges or service failures are handled via support review.
 
 ## 架构 | Architecture
 

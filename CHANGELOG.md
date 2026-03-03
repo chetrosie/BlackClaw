@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.9 - 2026-03-03
+
+- Added bilingual pricing and billing section to `README.md`:
+  - plan template table (Lite / Pro / Max)
+  - billing policy template
+  - payment method template
+  - refund policy template
+- Kept README as bilingual categorized documentation (Chinese + English).
+- Synced version markers to `v1.0.9` in `VERSION`, `index.html`, `dashboard.html`, `server/app.js`, `README.md`, and `package.json`.
+
 ## v1.0.8 - 2026-03-03
 
 - Updated GitHub repository About to bilingual copy (Chinese + English).
