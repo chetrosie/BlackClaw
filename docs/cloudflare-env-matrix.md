@@ -1,4 +1,4 @@
-# Cloudflare Deploy Matrix (v1.0.9)
+# Cloudflare Deploy Matrix (v1.0.10)
 
 本文用于 BlackClaw 在 Cloudflare 体系下的可执行配置清单。
 

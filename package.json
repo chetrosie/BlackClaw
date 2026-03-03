@@ -1,7 +1,7 @@
 {
   "name": "blackclaw-clone",
   "private": true,
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "BlackClaw MVP: marketing site + control-plane API + provisioning simulation",
   "scripts": {
     "dev": "node server/index.js",

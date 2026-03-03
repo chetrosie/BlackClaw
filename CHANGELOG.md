@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.10 - 2026-03-03
+
+- Refactored README style to match bilingual layout similar to `new-api`:
+  - centered header block
+  - language switch links at top
+  - Chinese-first presentation in main `README.md`
+- Added dedicated English document: `README.en.md`.
+- Kept bilingual plans and billing templates in both language docs.
+- Synced version markers to `v1.0.10` in `VERSION`, `index.html`, `dashboard.html`, `server/app.js`, `README.md`, and `package.json`.
+
 ## v1.0.9 - 2026-03-03
 
 - Added bilingual pricing and billing section to `README.md`:
